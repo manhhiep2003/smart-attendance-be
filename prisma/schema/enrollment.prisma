@@ -1,0 +1,11 @@
+model Enrollment {
+    studentId  String
+    classId    String
+    enrolledAt DateTime @default(now()) @db.Timestamptz(3)
+
+    student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+    @@id([studentId, classId])
+    @@map("enrollments")
+}
