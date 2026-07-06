@@ -1,0 +1,19 @@
+model Session {
+    id               String   @id @default(uuid())
+    classId          String   @map("class_id")
+    scheduleId       String   @map("schedule_id")
+    currentQrCode    String   @map("current_qr_code")
+    qrUpdatedAt      DateTime @default(now()) @map("qr_updated_at") @db.Timestamptz(3)
+    teacherLatitude  Float    @map("teacher_latidute")
+    teacherLongitude Float    @map("teacher_longidute")
+    radius           Float    @default(50.0)
+    isActive         Boolean  @default(true) @map("is_active")
+    expiresAt        DateTime @map("expires_at") @db.Timestamptz(3)
+    createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+    class             Class              @relation(fields: [classId], references: [id], onDelete: Cascade)
+    schedule          Schedule           @relation(fields: [scheduleId], references: [id])
+    attendanceRecords AttendanceRecord[]
+
+    @@map("sessions")
+}

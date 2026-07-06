@@ -1,0 +1,15 @@
+model Schedule {
+    id        String    @id @default(uuid())
+    classId   String    @map("class_id")
+    dayOfWeek String    @map("day_of_week") @db.VarChar(10) // Monday, Tuesday, ...
+    startTime String    @map("start_time") @db.VarChar(10)
+    endTime   String    @map("end_time") @db.VarChar(10)
+    roomName  String    @map("room_name") @db.VarChar(20)
+    createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+    updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+    class    Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+    sessions Session[]
+
+    @@map("schedules")
+}
