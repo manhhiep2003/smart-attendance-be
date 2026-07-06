@@ -7,7 +7,9 @@ enum Role {
 model User {
     id           String    @id @default(uuid())
     email        String    @unique @db.VarChar(100)
-    passwordHash String    @map("password_hash") @db.Text()
+    passwordHash String?   @map("password_hash") @db.Text()
+    googleId     String?   @unique @map("google_id") @db.VarChar(100)
+    avatar       String?   @db.Text()
     fullName     String    @map("full_name") @db.VarChar(120)
     role         Role      @default(STUDENT)
     createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)

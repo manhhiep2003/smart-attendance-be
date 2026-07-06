@@ -7,11 +7,11 @@ model AttendanceRecord {
     id               String           @id @default(uuid())
     sessionId        String           @map("session_id")
     studentId        String           @map("student_id")
-    status           AttendanceStatus @default(PRESENT)
+    status           AttendanceStatus @default(ABSENT)
     studentLatitude  Float            @map("student_latidute")
     studentLongitude Float            @map("student_longitude")
     distance         Float
-    verifiedAt       DateTime         @default(now()) @map("verifiedAt") @db.Timestamptz(3)
+    verifiedAt       DateTime         @default(now()) @map("verified_at") @db.Timestamptz(3)
 
     session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
     student User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
