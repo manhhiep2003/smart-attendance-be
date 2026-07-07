@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  TEACHER
+  STUDENT
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique @db.VarChar(100)
+  passwordHash String?   @map("password_hash") @db.Text()
+  fullName     String    @map("full_name") @db.VarChar(120)
+  role         Role      @default(STUDENT)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  managedClasses    Class[]            @relation("TeacherClasses")
+  enrollments       Enrollment[]
+  attendanceRecords AttendanceRecord[]
+
+  @@map("users")
+}
+
+model Course {
+  id          String    @id @default(uuid())
+  code        String    @unique @db.VarChar(20)
+  name        String    @db.VarChar(200)
+  description String?   @db.Text()
+  credits     Int       @default(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  classes Class[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  studentId  String   @map("student_id")
+  classId    String   @map("class_id")
+  enrolledAt DateTime @default(now()) @map("enrolled_at") @db.Timestamptz(3)
+
+  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, classId])
+  @@map("enrollments")
+}
+
+model Class {
+  id         String    @id @default(uuid())
+  name       String    @db.VarChar(120)
+  courseId   String    @map("course_id")
+  semesterId String    @map("semester_id")
+  teacherId  String    @map("teacher_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  course   Course   @relation(fields: [courseId], references: [id])
+  semester Semester @relation(fields: [semesterId], references: [id])
+  teacher  User     @relation("TeacherClasses", fields: [teacherId], references: [id])
+
+  schedules   Schedule[]
+  enrollments Enrollment[]
+  sessions    Session[]
+
+  @@map("classes")
+}
+
+model Schedule {
+  id        String    @id @default(uuid())
+  classId   String    @map("class_id")
+  dayOfWeek String    @map("day_of_week") @db.VarChar(10) // Monday, Tuesday, ...
+  startTime String    @map("start_time") @db.VarChar(10)
+  endTime   String    @map("end_time") @db.VarChar(10)
+  roomName  String    @map("room_name") @db.VarChar(20)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  class    Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  sessions Session[]
+
+  @@map("schedules")
+}
+
+model Semester {
+  id        String    @id @default(uuid())
+  name      String    @db.VarChar(20)
+  startDate DateTime  @map("start_time") @db.Timestamptz(3)
+  endDate   DateTime  @map("end_date") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  classes Class[]
+
+  @@map("semesters")
+}
+
+model Session {
+  id               String   @id @default(uuid())
+  classId          String   @map("class_id")
+  scheduleId       String   @map("schedule_id")
+  currentQrCode    String   @map("current_qr_code")
+  qrUpdatedAt      DateTime @default(now()) @map("qr_updated_at") @db.Timestamptz(3)
+  teacherLatitude  Float    @map("teacher_latidute")
+  teacherLongitude Float    @map("teacher_longidute")
+  radius           Float    @default(50.0)
+  isActive         Boolean  @default(true) @map("is_active")
+  expiresAt        DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  class             Class              @relation(fields: [classId], references: [id], onDelete: Cascade)
+  schedule          Schedule           @relation(fields: [scheduleId], references: [id])
+  attendanceRecords AttendanceRecord[]
+
+  @@map("sessions")
+}
+
+model AttendanceRecord {
+  id               String           @id @default(uuid())
+  sessionId        String           @map("session_id")
+  studentId        String           @map("student_id")
+  status           AttendanceStatus @default(ABSENT)
+  studentLatitude  Float            @map("student_latidute")
+  studentLongitude Float            @map("student_longitude")
+  distance         Float
+  verifiedAt       DateTime         @default(now()) @map("verified_at") @db.Timestamptz(3)
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@map("attendance_records")
+}
