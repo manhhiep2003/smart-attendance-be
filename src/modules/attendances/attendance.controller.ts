@@ -1,6 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
-import { randomUUID } from 'crypto';
 
 @Controller('attendance')
 export class AttendanceController {
@@ -17,7 +16,7 @@ export class AttendanceController {
     },
   ) {
     // Tạm thời hardcode studentId để test. Khi có JWT Auth thì lấy từ @Request() req -> req.user.id
-    const mockStudentId = randomUUID();
+    const mockStudentId = '08d1097e-4560-481f-bc3b-7f3201b6776c';
 
     return this.attendanceService.checkIn(
       mockStudentId,
