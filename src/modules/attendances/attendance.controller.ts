@@ -16,7 +16,7 @@ export class AttendanceController {
     },
   ) {
     // Tạm thời hardcode studentId để test. Khi có JWT Auth thì lấy từ @Request() req -> req.user.id
-    const mockStudentId = '08d1097e-4560-481f-bc3b-7f3201b6776c';
+    const mockStudentId = '64d9419e-e456-4979-8231-edc196e7dbbd';
 
     return this.attendanceService.checkIn(
       mockStudentId,
