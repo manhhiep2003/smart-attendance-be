@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import tls from 'tls';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -14,7 +15,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const pool = new Pool({
       connectionString,
       ssl: {
-        ca: readFileSync(join(process.cwd(), 'certs', 'ca.pem'), 'utf8'),
+        rejectUnauthorized: true,
+        ca: [...tls.rootCertificates, readFileSync(join(process.cwd(), 'certs', 'ca.pem'), 'utf8')],
       },
     });
 
