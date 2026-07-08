@@ -4,11 +4,14 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import 'dotenv/config';
+import tls from 'tls';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    ca: readFileSync(join(process.cwd(), 'certs', 'ca.pem'), 'utf8'),
+    rejectUnauthorized: true,
+    ca: [...tls.rootCertificates, readFileSync(join(process.cwd(), 'certs', 'ca.pem'), 'utf8')],
   },
 });
 
