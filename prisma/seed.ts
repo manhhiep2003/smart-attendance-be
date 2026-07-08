@@ -2,9 +2,14 @@ import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    ca: readFileSync(join(process.cwd(), 'certs', 'ca.pem'), 'utf8'),
+  },
 });
 
 const adapter = new PrismaPg(pool);
