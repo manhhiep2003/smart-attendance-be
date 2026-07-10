@@ -5,6 +5,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { SessionModule } from 'src/modules/sessions/session.module';
 import { AttendanceModule } from 'src/modules/attendances/attendance.module';
+import { ClassModule } from 'src/modules/classes/class.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AttendanceModule } from 'src/modules/attendances/attendance.module';
     PrismaModule,
     SessionModule,
     AttendanceModule,
+    ClassModule,
   ],
   controllers: [AppController],
   providers: [AppService],
