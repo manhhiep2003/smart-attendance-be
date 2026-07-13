@@ -14,10 +14,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
     const pool = new Pool({
       connectionString,
-      // ssl: {
-      //   rejectUnauthorized: true,
-      //   ca: [...tls.rootCertificates, readFileSync(join(process.cwd(), 'certs', 'ca.pem'), 'utf8')],
-      // },
+      ssl: {
+        rejectUnauthorized: true,
+        ca: [...tls.rootCertificates, readFileSync(join(process.cwd(), 'certs', 'ca.pem'), 'utf8')],
+      },
     });
 
     const adapter = new PrismaPg(pool);
